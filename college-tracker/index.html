@@ -170,7 +170,11 @@ table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
 th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:middle}
 thead th{border-top:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface-2)}
 td.sch{font-weight:600}
-td.sch span{display:inline-flex;align-items:center;gap:8px}
+td.sch button{appearance:none;border:0;background:none;padding:0;font:inherit;font-weight:600;color:var(--ink);display:inline-flex;align-items:center;gap:8px;cursor:pointer;text-align:left}
+td.sch button:hover .nm{text-decoration:underline;text-underline-offset:3px}
+td.sch .go{color:var(--muted);font-weight:500}
+tbody tr[data-idx]{cursor:pointer}
+tbody tr[data-idx]:hover{background:var(--surface-2)}
 td.sch i{width:12px;height:12px;border-radius:3px;background:var(--p);box-shadow:inset 0 -4px 0 var(--s);flex:none}
 td select{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:5px 8px;font-size:13px}
 .empty{color:var(--muted);font-size:14px;padding:4px 2px}
@@ -493,12 +497,16 @@ function renderBoard(){
     const rows = S.filter(s=>s.status===id).sort(byDecision);
     return `<section class="group"><h3><span class="chip st-${id}" style="font-family:var(--sans)">${statusLabel(id)}</span><span class="cnt">${rows.length}</span></h3>
       ${rows.length ? `<div class="tablewrap"><table><thead><tr><th>School</th><th>Plan</th><th>Decision date</th><th>Major</th><th>Status</th></tr></thead><tbody>
-      ${rows.map(s=>`<tr style="${vars(s)}"><td class="sch"><span><i></i>${esc(s.name)}</span></td><td><span class="plan">${esc(s.plan)}</span></td><td class="num">${esc(s.decision)}</td><td>${esc(s.major||"—")}</td>
+      ${rows.map(s=>`<tr style="${vars(s)}" data-idx="${S.indexOf(s)}"><td class="sch"><button type="button" aria-label="Open ${esc(s.name)} page"><i></i><span class="nm">${esc(s.name)}</span><span class="go" aria-hidden="true">›</span></button></td><td><span class="plan">${esc(s.plan)}</span></td><td class="num">${esc(s.decision)}</td><td>${esc(s.major||"—")}</td>
       <td><select id="bst-${s.id}" data-id="${s.id}" aria-label="Status for ${esc(s.name)}">${statusOptions(s.status)}</select></td></tr>`).join("")}
       </tbody></table></div>` : `<p class="empty">None yet.</p>`}</section>`;
   }).join("");
 }
 $("#tiles").addEventListener("click", e=>{ const t=e.target.closest(".tile"); if(!t) return; state.filter = state.filter===t.dataset.f ? null : t.dataset.f; save(); renderBoard(); });
+$("#groups").addEventListener("click", e=>{
+  if(e.target.closest("select")) return;
+  const r=e.target.closest("tr[data-idx]"); if(r) openSchool(+r.dataset.idx);
+});
 $("#groups").addEventListener("change", e=>{
   const el=e.target; if(!el.dataset.id) return; const s=find(el.dataset.id); s.status=el.value; save();
   toast(`${s.short} moved to ${statusLabel(s.status)}`); renderAll();
