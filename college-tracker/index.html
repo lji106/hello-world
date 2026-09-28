@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fall 2027 College List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F4F7; --surface:#FFFFFF; --surface-2:#EBEDF2; --ink:#14161B; --muted:#5B6170; --line:#D9DCE3;
+  --focus:#2F5BD3;
+  --ok:#1D7A4B; --ok-bg:#DDF1E6;
+  --warn:#9A5F00; --warn-bg:#FBEBCB;
+  --wait:#5A48B0; --wait-bg:#E7E3FA;
+  --bad:#B02A22; --bad-bg:#F8DEDB;
+  --pend:#3F5873; --pend-bg:#DFE7F0;
+  --none:#6B7080; --none-bg:#ECEDF1;
+  --display:"Big Shoulders Display","Oswald","Arial Narrow",Impact,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --tint:#1F2A44; --on-tint:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1115; --surface:#181B21; --surface-2:#22262E; --ink:#ECEEF2; --muted:#9CA2B0; --line:#2E333C;
+    --focus:#8FB0FF;
+    --ok:#6FD39E; --ok-bg:#15332A; --warn:#F2C065; --warn-bg:#3A2C10; --wait:#B6A8FF; --wait-bg:#2A2448;
+    --bad:#FF8F86; --bad-bg:#3E1C1A; --pend:#A9C2DD; --pend-bg:#1E2A38; --none:#A1A6B3; --none-bg:#23262D;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1115; --surface:#181B21; --surface-2:#22262E; --ink:#ECEEF2; --muted:#9CA2B0; --line:#2E333C;
+  --focus:#8FB0FF;
+  --ok:#6FD39E; --ok-bg:#15332A; --warn:#F2C065; --warn-bg:#3A2C10; --wait:#B6A8FF; --wait-bg:#2A2448;
+  --bad:#FF8F86; --bad-bg:#3E1C1A; --pend:#A9C2DD; --pend-bg:#1E2A38; --none:#A1A6B3; --none-bg:#23262D;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* App bar */
+.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--tint);color:var(--on-tint);transition:background-color .35s ease,color .35s ease}
+.appbar-in{max-width:980px;margin:0 auto;padding:10px 16px 0;display:flex;flex-direction:column;gap:8px}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand h1{margin:0;font:800 26px/1 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.brand small{font:500 12px/1 var(--mono);opacity:.8;white-space:nowrap}
+.tabs{display:flex;gap:4px}
+.tab{appearance:none;border:0;background:transparent;color:inherit;opacity:.72;padding:8px 12px 10px;font-weight:600;font-size:14px;border-bottom:3px solid transparent;cursor:pointer}
+.tab[aria-selected="true"]{opacity:1;border-bottom-color:currentColor}
+.tab:hover{opacity:1}
+
+main{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:18px 48px}
+.view{display:flex;flex-direction:column;gap:18px}
+
+/* Buttons */
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.danger{color:var(--bad);border-color:currentColor}
+.btn.small{padding:5px 10px;font-size:13px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.toolbar .grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{appearance:none;border:0;background:transparent;padding:6px 10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* Summary strip */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.sum .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sum .v{font-weight:600;margin-top:2px}
+.sum .v .mono{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500}
+
+/* College list (Common App style) */
+.clist{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.crow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.crow:first-child{border-top:0}
+.crow:hover{background:var(--surface-2)}
+.mono-badge{width:44px;height:44px;border-radius:8px;display:grid;place-items:center;font:800 17px/1 var(--display);letter-spacing:.02em;border-bottom:4px solid var(--s);background:var(--p);color:var(--on)}
+.cname{font-weight:600;line-height:1.25}
+.csub{font-size:13px;color:var(--muted)}
+.cmeta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+.plan{display:inline-block;font:500 12px/1 var(--mono);padding:4px 7px;border-radius:5px;border:1px solid currentColor;letter-spacing:.03em;white-space:nowrap}
+.dec{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.dec b{color:var(--ink);font-weight:600}
+.name-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+@media (max-width:560px){
+  .crow{grid-template-columns:40px minmax(0,1fr)}
+  .mono-badge{width:40px;height:40px;font-size:15px}
+  .cmeta{grid-column:2;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:6px 10px;text-align:left}
+}
+
+/* Status chips */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;color:var(--c);background:var(--cb)}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st-accepted{--c:var(--ok);--cb:var(--ok-bg)}
+.st-deferred{--c:var(--warn);--cb:var(--warn-bg)}
+.st-waitlisted{--c:var(--wait);--cb:var(--wait-bg)}
+.st-rejected{--c:var(--bad);--cb:var(--bad-bg)}
+.st-pending{--c:var(--pend);--cb:var(--pend-bg)}
+.st-notsubmitted{--c:var(--none);--cb:var(--none-bg)}
+
+/* Swipe pages */
+.pager{display:flex;align-items:center;gap:8px}
+.pager .arrow{flex:none;width:38px;height:38px;border-radius:50%;padding:0;display:grid;place-items:center;font-size:18px}
+.chips{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-block:4px}
+.chips::-webkit-scrollbar{display:none}
+.pchip{flex:none;appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px 4px 6px;font-size:12.5px;font-weight:600;display:flex;gap:6px;align-items:center;cursor:pointer;color:var(--ink)}
+.pchip i{width:12px;height:12px;border-radius:50%;background:var(--p);box-shadow:inset 0 -4px 0 var(--s)}
+.pchip[aria-current="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;gap:16px;scrollbar-width:none;overscroll-behavior-x:contain;border-radius:14px}
+.track::-webkit-scrollbar{display:none}
+@media (prefers-reduced-motion:reduce){.track{scroll-behavior:auto}.appbar{transition:none}}
+.slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.hero{background:var(--p);color:var(--on);padding:20px 20px 18px;border-bottom:8px solid var(--s);position:relative;display:flex;flex-direction:column;gap:10px}
+.hero .eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;opacity:.85}
+.hero h2{margin:0;font:800 clamp(34px,7vw,56px)/.95 var(--display);text-transform:uppercase;letter-spacing:.01em;text-wrap:balance;overflow-wrap:anywhere}
+.hero .planrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:14px}
+.hero .plan{border-color:currentColor;font-size:13px;padding:5px 8px}
+.hero .when b{font-weight:600}
+.hero .count{font:500 12px/1 var(--mono);padding:5px 8px;border-radius:5px;background:color-mix(in srgb,var(--on) 16%,transparent)}
+.hero .chip{background:var(--surface)}
+.sbody{padding:18px 20px 20px;display:flex;flex-direction:column;gap:18px}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field > span,.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 11px;font-size:15px}
+.field textarea{min-height:84px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--focus);outline-offset:0;border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{padding:12px 14px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:3px}
+.stat:first-child{border-left:0}
+.stat .big{font:800 30px/1 var(--display);letter-spacing:.01em}
+.stat .note{font-size:12.5px;color:var(--muted);line-height:1.35}
+.stat.you{background:var(--surface-2)}
+@media (max-width:600px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat.you{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}
+}
+.dates{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.date{border-top:3px solid var(--line);padding-top:8px}
+.date.decision{border-top-color:var(--sAcc)}
+.date .v{font-weight:600}
+.date .mono{font:500 12.5px/1.4 var(--mono);color:var(--muted)}
+.pnote{margin:0;font-size:14px;color:var(--muted);max-width:65ch}
+.sfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+.sfoot a{color:var(--ink);font-weight:600}
+.pos{font:500 12px/1 var(--mono);color:var(--muted)}
+
+/* Decisions board */
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tile{appearance:none;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;color:var(--ink)}
+.tile .n{font:800 34px/1 var(--display);color:var(--c)}
+.tile .t{font-size:12px;font-weight:600;color:var(--muted)}
+.tile[aria-pressed="true"]{outline:2px solid var(--c);outline-offset:-2px;background:var(--cb)}
+.group{display:flex;flex-direction:column;gap:8px}
+.group h3{margin:0;display:flex;align-items:center;gap:8px;font:800 22px/1 var(--display);text-transform:uppercase;letter-spacing:.03em}
+.group h3 .cnt{font:500 13px/1 var(--mono);color:var(--muted)}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:middle}
+thead th{border-top:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface-2)}
+td.sch{font-weight:600}
+td.sch span{display:inline-flex;align-items:center;gap:8px}
+td.sch i{width:12px;height:12px;border-radius:3px;background:var(--p);box-shadow:inset 0 -4px 0 var(--s);flex:none}
+td select{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:5px 8px;font-size:13px}
+.empty{color:var(--muted);font-size:14px;padding:4px 2px}
+
+/* Modal */
+.overlay{position:fixed;inset:0;z-index:50;background:rgb(10 12 16 / .55);display:flex;align-items:flex-end;justify-content:center;padding:16px}
+@media (min-width:640px){.overlay{align-items:center}}
+.modal{background:var(--surface);color:var(--ink);border-radius:14px;width:100%;max-width:620px;max-height:calc(100% - 16px);overflow:auto;padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line)}
+.modal h2{margin:0;font:800 26px/1 var(--display);text-transform:uppercase}
+.modal .actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+.modal .actions .grp{display:flex;gap:8px}
+.help{font-size:13px;color:var(--muted);margin:0}
+.colorpair{display:flex;gap:8px;align-items:center}
+.colorpair input[type=color]{width:44px;height:38px;padding:2px;flex:none}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-weight:600;font-size:14px;z-index:60}
+.foot{font-size:12.5px;color:var(--muted);max-width:75ch;margin:0}
+</style>
+</head>
+<body>
+<header class="appbar" id="appbar">
+  <div class="appbar-in">
+    <div class="brand"><h1>Fall 2027 College List</h1><small id="today" class="num"></small></div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button class="tab" role="tab" id="tab-list" data-view="list" aria-selected="true">My Colleges</button>
+      <button class="tab" role="tab" id="tab-schools" data-view="schools" aria-selected="false">School Pages</button>
+      <button class="tab" role="tab" id="tab-board" data-view="board" aria-selected="false">Decisions</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- My Colleges -->
+  <section class="view" id="view-list">
+    <div class="summary" id="summary"></div>
+    <div class="toolbar">
+      <div class="grp">
+        <span class="lbl">Sort</span>
+        <div class="seg" id="sortSeg">
+          <button data-sort="order" aria-pressed="true">My order</button>
+          <button data-sort="name" aria-pressed="false">A–Z</button>
+          <button data-sort="decision" aria-pressed="false">Decision date</button>
+        </div>
+      </div>
+      <div class="grp">
+        <button class="btn" id="backupBtn">Backup</button>
+        <button class="btn primary" id="addBtn">+ Add college</button>
+      </div>
+    </div>
+    <ul class="clist" id="clist"></ul>
+    <p class="foot">Stats and dates come from each school's admissions site and Common Data Set figures for Fall 2025 entrants, researched Sept 2026. Dates marked "~" are estimates from last year's calendar. Confirm on the school's admissions page before relying on them. "Your rate" is the out-of-state rate for a Connecticut applicant (in-state for UConn) where the school publishes one. Your edits save in this browser; use Backup to move them to another device.</p>
+  </section>
+
+  <!-- School pages -->
+  <section class="view" id="view-schools" hidden>
+    <div class="pager">
+      <button class="btn arrow" id="prevBtn" aria-label="Previous school">‹</button>
+      <div class="chips" id="pchips"></div>
+      <button class="btn arrow" id="nextBtn" aria-label="Next school">›</button>
+    </div>
+    <div class="track" id="track" tabindex="0" aria-label="School pages. Swipe or use arrow keys."></div>
+  </section>
+
+  <!-- Decisions board -->
+  <section class="view" id="view-board" hidden>
+    <div class="tiles" id="tiles"></div>
+    <div id="groups" class="view"></div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" hidden><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+const STORE_KEY = "collegeList.v1";
+const STATUSES = [
+  {id:"notsubmitted", label:"Not submitted"},
+  {id:"pending", label:"Pending"},
+  {id:"accepted", label:"Accepted"},
+  {id:"deferred", label:"Deferred"},
+  {id:"waitlisted", label:"Waitlisted"},
+  {id:"rejected", label:"Rejected"}
+];
+const BOARD_ORDER = ["accepted","deferred","waitlisted","rejected","pending","notsubmitted"];
+const PLANS = ["EA","REA","ED","ED2","RD","Rolling"];
+
+// Researched Sept 2026 for a Connecticut resident applying for Fall 2027.
+const DEFAULTS = [
+ {name:"Auburn University",short:"AU",nick:"Tigers",city:"Auburn, AL",type:"Public",primary:"#0C2340",secondary:"#E87722",
+  plan:"EA",deadline:"Oct 15, 2026",deadlineDate:"2026-10-15",decision:"Mid-Nov 2026",decisionDate:"2026-11-15",
+  planNote:"Auburn runs several Early Action rounds. Apply by Oct 15 for a mid-November decision. Later EA rounds: Nov 15 (mid-Dec decision) and Dec 1 (early Feb). RD deadline is Feb 1.",
+  undergrad:"~27,000",admit:"~46%",you:"Not published",youLabel:"Out-of-state",youNote:"Auburn favors Alabama residents; the out-of-state rate is lower than 46%.",url:"https://auburn.edu/admissions/"},
+ {name:"Boston College",short:"BC",nick:"Eagles",city:"Chestnut Hill, MA",type:"Private",primary:"#8A100B",secondary:"#BC9B6A",
+  plan:"RD",deadline:"Jan 1, 2027",deadlineDate:"2027-01-01",decision:"By Apr 1, 2027",decisionDate:"2027-04-01",
+  planNote:"BC has no Early Action. Its only early options are binding ED I (Nov 1) and ED II (Jan 1), so Regular Decision is your earliest non-binding plan.",
+  undergrad:"~9,500",admit:"~16%",you:"~16%",youLabel:"Private",youNote:"Private school; residency doesn't change your odds.",url:"https://www.bc.edu/bc-web/admission.html"},
+ {name:"Clemson University",short:"CU",nick:"Tigers",city:"Clemson, SC",type:"Public",primary:"#F56600",secondary:"#522D80",
+  plan:"EA",deadline:"Oct 15, 2026",deadlineDate:"2026-10-15",decision:"Mid-Dec 2026",decisionDate:"2026-12-15",
+  planNote:"Application due Oct 15; transcripts, recommendations and other materials due Nov 1.",
+  undergrad:"~23,500",admit:"~42%",you:"40.4%",youLabel:"Out-of-state",youNote:"Fall 2025 CDS. In-state admit rate was 52.9%.",url:"https://www.clemson.edu/admissions/"},
+ {name:"Florida Atlantic University",short:"FAU",nick:"Owls",city:"Boca Raton, FL",type:"Public",primary:"#003366",secondary:"#CC0000",
+  plan:"EA",deadline:"Oct 15, 2026",deadlineDate:"2026-10-15",decision:"~Early Dec 2026",decisionDate:"2026-12-04",
+  planNote:"Non-binding Early Action. Last cycle's EA decisions went out by Dec 4.",
+  undergrad:"~25,000",admit:"~81%",you:"Not published",youLabel:"Out-of-state",youNote:"FAU doesn't split its admit rate by residency.",url:"https://www.fau.edu/admissions/"},
+ {name:"Georgia Tech",short:"GT",nick:"Yellow Jackets",city:"Atlanta, GA",type:"Public",primary:"#003057",secondary:"#B3A369",
+  plan:"EA",deadline:"~Nov 1, 2026 (EA2)",deadlineDate:"2026-11-01",decision:"~Late Jan 2027",decisionDate:"2027-01-30",
+  planNote:"Non-Georgia students apply in Early Action 2. Last cycle's EA2 deadline was early November with decisions on Jan 30.",
+  undergrad:"~19,500",admit:"12.7%",you:"~9%",youLabel:"Out-of-state",youNote:"Fall 2025. In-state admit rate was about 30%.",url:"https://admission.gatech.edu/first-year/deadlines"},
+ {name:"Michigan State University",short:"MSU",nick:"Spartans",city:"East Lansing, MI",type:"Public",primary:"#18453B",secondary:"#FFFFFF",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"By Jan 15, 2027",decisionDate:"2027-01-15",
+  planNote:"Non-binding EA. Applying by Nov 1 also gives maximum scholarship consideration.",
+  undergrad:"~40,000",admit:"~83%",you:"Not published",youLabel:"Out-of-state",youNote:"MSU doesn't publish a residency split; out-of-state runs a few points lower.",url:"https://admissions.msu.edu/apply/first-year/dates-and-deadlines"},
+ {name:"NC State University",short:"NCS",nick:"Wolfpack",city:"Raleigh, NC",type:"Public",primary:"#CC0000",secondary:"#000000",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"Jan 30, 2027",decisionDate:"2027-01-30",
+  planNote:"Application due Nov 1; supporting materials due Nov 15.",
+  undergrad:"~27,000",admit:"39.5%",you:"34.4%",youLabel:"Out-of-state",youNote:"Fall 2025 CDS. In-state admit rate was 46.2%.",url:"https://admissions.ncsu.edu/apply/deadlines"},
+ {name:"Penn State",short:"PSU",nick:"Nittany Lions",city:"University Park, PA",type:"Public",primary:"#041E42",secondary:"#FFFFFF",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"By Dec 24, 2026",decisionDate:"2026-12-24",
+  planNote:"Complete application by Nov 1 for a decision by Dec 24. Rolling after that, but admission gets harder.",
+  undergrad:"~42,000",admit:"~55%",you:"Not published",youLabel:"Out-of-state",youNote:"University Park figure. Penn State doesn't publish a residency split.",url:"https://admissions.psu.edu/"},
+ {name:"University of Alabama",short:"UA",nick:"Crimson Tide",city:"Tuscaloosa, AL",type:"Public",primary:"#9E1B32",secondary:"#828A8F",
+  plan:"Rolling",deadline:"Rolling · ~mid-Dec priority",deadlineDate:"2026-12-15",decision:"Rolling",decisionDate:"",
+  planNote:"No Early Action. Alabama admits on a rolling basis, so apply early. Merit scholarship priority deadline has been around mid-December.",
+  undergrad:"~34,000",admit:"~71%",you:"70.3%",youLabel:"Out-of-state",youNote:"Fall 2025. In-state admit rate was 73.6%.",url:"https://admissions.ua.edu/freshman/"},
+ {name:"UConn",short:"UC",nick:"Huskies",city:"Storrs, CT",type:"Public",primary:"#000E2F",secondary:"#E4002B",
+  plan:"RD",deadline:"Dec 1, 2026 (priority)",deadlineDate:"2026-12-01",decision:"~Early Mar 2027",decisionDate:"2027-03-01",
+  planNote:"UConn has no Early Action; its only early plan is binding ED (Nov 1). Apply by the Dec 1 priority deadline for merit and Honors consideration. Final deadline Jan 15.",
+  undergrad:"~19,500 (Storrs)",admit:"~51%",you:"40.5%",youLabel:"In-state (CT)",youNote:"Storrs campus, Fall 2025. About 89% of CT applicants got into at least one UConn campus.",url:"https://admissions.uconn.edu/apply/first-year/deadlines/"},
+ {name:"University of Delaware",short:"UD",nick:"Blue Hens",city:"Newark, DE",type:"Public",primary:"#00539F",secondary:"#FFD200",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"~Mid–late Jan 2027",decisionDate:"2027-01-20",
+  planNote:"Non-binding EA. Applying by Nov 1 also puts you in Honors College review.",
+  undergrad:"~19,000",admit:"~74%",you:"72.8%",youLabel:"Out-of-state",youNote:"Fall 2025. In-state admit rate was 86.4%.",url:"https://www.udel.edu/apply/undergraduate-admissions/"},
+ {name:"University of Louisville",short:"UL",nick:"Cardinals",city:"Louisville, KY",type:"Public",primary:"#AD0000",secondary:"#000000",
+  plan:"Rolling",deadline:"Dec 1, 2026 (scholarships)",deadlineDate:"2026-12-01",decision:"~1–2 weeks after file is complete",decisionDate:"",
+  planNote:"No Early Action. Rolling admission; apply by Dec 1 for the best scholarship consideration.",
+  undergrad:"~16,000",admit:"~80%",you:"~82%",youLabel:"Out-of-state",youNote:"Fall 2024 CDS. Out-of-state admit rate was slightly higher than in-state.",url:"https://louisville.edu/admissions/apply/first-time-freshman-applicants"},
+ {name:"University of Miami",short:"UM",nick:"Hurricanes",city:"Coral Gables, FL",type:"Private",primary:"#005030",secondary:"#F47321",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"By end of Jan 2027",decisionDate:"2027-01-31",
+  planNote:"Non-binding EA. Possible outcomes: admit, defer to RD, or deny.",
+  undergrad:"~12,500",admit:"~19%",you:"~19%",youLabel:"Private",youNote:"Private school; residency doesn't change your odds.",url:"https://admissions.miami.edu/undergraduate/application-process/options-and-deadlines/index.html"},
+ {name:"University of Pittsburgh",short:"PITT",nick:"Panthers",city:"Pittsburgh, PA",type:"Public",primary:"#003594",secondary:"#FFB81C",
+  plan:"Rolling",deadline:"Dec 1, 2026 (scholarships)",deadlineDate:"2026-12-01",decision:"6–8 weeks after file is complete",decisionDate:"",
+  planNote:"No Early Action. Rolling admission; submit everything by Dec 1 for automatic scholarship review and Honors College consideration.",
+  undergrad:"~20,000",admit:"~59%",you:"Not published",youLabel:"Out-of-state",youNote:"Pitt doesn't publish a residency split; out-of-state is slightly more competitive.",url:"https://admissions.pitt.edu/first-year-student/"},
+ {name:"University of Richmond",short:"UR",nick:"Spiders",city:"Richmond, VA",type:"Private",primary:"#990000",secondary:"#000066",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"~Late Jan 2027",decisionDate:"2027-01-25",
+  planNote:"Non-binding EA.",
+  undergrad:"~3,200",admit:"~22%",you:"~22%",youLabel:"Private",youNote:"Private school; residency doesn't change your odds.",url:"https://admissions.richmond.edu/process/early-action/index.html"},
+ {name:"University of Tennessee",short:"UT",nick:"Volunteers",city:"Knoxville, TN",type:"Public",primary:"#FF8200",secondary:"#58595B",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"~Mid-Dec 2026",decisionDate:"2026-12-17",
+  planNote:"Apply by Nov 1, materials by Nov 15. Out-of-state EA decisions come out a week or two after in-state ones (Dec 17 last cycle).",
+  undergrad:"~32,000",admit:"~39%",you:"~33%",youLabel:"Out-of-state",youNote:"Class of 2028 figure; Tennessee residents are admitted at a much higher rate.",url:"https://admissions.utk.edu/important-dates-and-deadlines"},
+ {name:"Virginia Tech",short:"VT",nick:"Hokies",city:"Blacksburg, VA",type:"Public",primary:"#861F41",secondary:"#E5751F",
+  plan:"EA",deadline:"Nov 1, 2026",deadlineDate:"2026-11-01",decision:"~Late Feb 2027",decisionDate:"2027-02-25",
+  planNote:"Non-binding EA. VT's EA decisions come later than most, around late February.",
+  undergrad:"~31,000",admit:"54.6%",you:"58.7%",youLabel:"Out-of-state",youNote:"Fall 2025 CDS. In-state admit rate was 47.3%.",url:"https://www.vt.edu/admissions/undergraduate/apply/dates-and-deadlines.html"},
+ {name:"Wake Forest University",short:"WF",nick:"Demon Deacons",city:"Winston-Salem, NC",type:"Private",primary:"#9E7E38",secondary:"#000000",
+  plan:"RD",deadline:"Jan 1, 2027",deadlineDate:"2027-01-01",decision:"~Apr 1, 2027",decisionDate:"2027-04-01",
+  planNote:"Wake's Early Action (Nov 15) is open only to first-generation college students. Otherwise the non-binding option is RD.",
+  undergrad:"~5,500",admit:"~21%",you:"~21%",youLabel:"Private",youNote:"Private school; residency doesn't change your odds.",url:"https://admissions.wfu.edu/apply/"}
+];
+
+// ---------- state ----------
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function fresh(){ return DEFAULTS.map(s => Object.assign({id:uid(), major:"", status:"notsubmitted", notes:""}, s)); }
+function load(){
+  try{ const raw = localStorage.getItem(STORE_KEY); if(raw){ const d = JSON.parse(raw); if(Array.isArray(d.schools)) return d; } }catch(e){}
+  return null;
+}
+let state = load() || {schools:fresh(), sort:"order", view:"list", idx:0, filter:null};
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+
+// ---------- helpers ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+function daysUntil(iso){ if(!iso) return null; const d = new Date(iso+"T00:00:00"); return Math.round((d - TODAY)/86400000); }
+function countdown(iso){
+  const n = daysUntil(iso); if(n===null) return "";
+  if(n>1) return "in "+n+" days"; if(n===1) return "tomorrow"; if(n===0) return "today"; return "date passed";
+}
+function lum(hex){
+  const h = (hex||"#000").replace("#",""); const v = [0,2,4].map(i => parseInt(h.substr(i,2),16)/255).map(c => c<=.03928 ? c/12.92 : Math.pow((c+.055)/1.055,2.4));
+  return .2126*v[0]+.7152*v[1]+.0722*v[2];
+}
+function onColor(hex){ const L = lum(hex); return (1.05/(L+.05)) >= ((L+.05)/(0.012+.05)) ? "#FFFFFF" : "#111317"; }
+function vars(s){ return `--p:${s.primary};--s:${s.secondary};--on:${onColor(s.primary)}`; }
+function statusLabel(id){ return (STATUSES.find(x=>x.id===id)||STATUSES[0]).label; }
+function chip(id){ return `<span class="chip st-${id}">${esc(statusLabel(id))}</span>`; }
+function statusOptions(cur){ return STATUSES.map(s=>`<option value="${s.id}"${s.id===cur?" selected":""}>${s.label}</option>`).join(""); }
+function byDecision(a,b){ return (a.decisionDate||"9999") < (b.decisionDate||"9999") ? -1 : (a.decisionDate||"9999") > (b.decisionDate||"9999") ? 1 : a.name.localeCompare(b.name); }
+function find(id){ return state.schools.find(s=>s.id===id); }
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,1800); }
+
+$("#today").textContent = TODAY.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+
+// ---------- My Colleges ----------
+function renderSummary(){
+  const S = state.schools;
+  const counts = {}; S.forEach(s=>counts[s.plan]=(counts[s.plan]||0)+1);
+  const planTxt = PLANS.filter(p=>counts[p]).map(p=>counts[p]+" "+p).join(" · ") || "No colleges yet";
+  const upD = S.filter(s=>s.deadlineDate && daysUntil(s.deadlineDate)>=0 && s.status==="notsubmitted").sort((a,b)=>a.deadlineDate<b.deadlineDate?-1:1);
+  const nextD = upD.length ? upD.filter(s=>s.deadlineDate===upD[0].deadlineDate) : [];
+  const upR = S.filter(s=>s.decisionDate && daysUntil(s.decisionDate)>=0 && (s.status==="pending"||s.status==="notsubmitted")).sort(byDecision);
+  const decided = S.filter(s=>["accepted","rejected","waitlisted","deferred"].includes(s.status)).length;
+  $("#summary").innerHTML = `
+    <div class="sum"><div class="k">${S.length} colleges</div><div class="v">${esc(planTxt)}</div></div>
+    <div class="sum"><div class="k">Next deadline</div><div class="v">${nextD.length ? esc(nextD.map(s=>s.short).join(", "))+` <span class="mono">${esc(nextD[0].deadline)} · ${countdown(nextD[0].deadlineDate)}</span>` : "All submitted"}</div></div>
+    <div class="sum"><div class="k">Next decision</div><div class="v">${upR.length ? esc(upR[0].name)+` <span class="mono">${esc(upR[0].decision)} · ${countdown(upR[0].decisionDate)}</span>` : "None scheduled"}</div></div>
+    <div class="sum"><div class="k">Decisions in</div><div class="v"><span class="num">${decided}</span> of ${S.length}</div></div>`;
+}
+function sortedList(){
+  const L = state.schools.map((s,i)=>({s,i}));
+  if(state.sort==="name") L.sort((a,b)=>a.s.name.localeCompare(b.s.name));
+  if(state.sort==="decision") L.sort((a,b)=>byDecision(a.s,b.s));
+  return L;
+}
+function renderList(){
+  renderSummary();
+  document.querySelectorAll("#sortSeg button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.sort===state.sort)));
+  $("#clist").innerHTML = sortedList().map(({s,i})=>`
+    <li class="crow" data-idx="${i}" tabindex="0" style="${vars(s)}" aria-label="Open ${esc(s.name)} page">
+      <div class="mono-badge">${esc(s.short)}</div>
+      <div><div class="name-line"><span class="cname">${esc(s.name)}</span><span class="plan">${esc(s.plan)}</span></div>
+        <div class="csub">${esc(s.city)} · ${esc(s.major ? s.major : "Major not set")}</div></div>
+      <div class="cmeta"><span class="dec">Decision <b>${esc(s.decision)}</b></span>${chip(s.status)}</div>
+    </li>`).join("") || `<li class="crow"><span></span><span class="empty">No colleges yet. Tap “Add college”.</span></li>`;
+}
+$("#clist").addEventListener("click", e=>{ const r=e.target.closest(".crow[data-idx]"); if(r){ openSchool(+r.dataset.idx); } });
+$("#clist").addEventListener("keydown", e=>{ if(e.key==="Enter"){ const r=e.target.closest(".crow[data-idx]"); if(r) openSchool(+r.dataset.idx); } });
+$("#sortSeg").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b) return; state.sort=b.dataset.sort; save(); renderList(); });
+
+// ---------- School pages ----------
+function slideHTML(s,i){
+  const n = state.schools.length;
+  return `<article class="slide" data-id="${s.id}" style="${vars(s)};--sAcc:${s.secondary.toUpperCase()==="#FFFFFF"?s.primary:s.secondary}" aria-label="${esc(s.name)}">
+    <header class="hero">
+      <div class="eyebrow">${esc(s.nick)} · ${esc(s.city)} · ${esc(s.type)}</div>
+      <h2>${esc(s.name)}</h2>
+      <div class="planrow"><span class="plan">${esc(s.plan)}</span><span class="when">Decision: <b>${esc(s.decision)}</b></span>${s.decisionDate?`<span class="count">${countdown(s.decisionDate)}</span>`:""}${chip(s.status)}</div>
+    </header>
+    <div class="sbody">
+      <div class="frow">
+        <label class="field"><span>Major I'm applying for</span><input id="major-${s.id}" data-k="major" value="${esc(s.major)}" placeholder="e.g. Finance"></label>
+        <label class="field"><span>Application status</span><select id="status-${s.id}" data-k="status">${statusOptions(s.status)}</select></label>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="lbl">Undergrads</span><span class="big num">${esc(s.undergrad)}</span></div>
+        <div class="stat"><span class="lbl">Overall admit rate</span><span class="big num">${esc(s.admit)}</span></div>
+        <div class="stat you"><span class="lbl">Your rate · ${esc(s.youLabel)}</span><span class="big num">${esc(s.you)}</span><span class="note">${esc(s.youNote)}</span></div>
+      </div>
+      <div class="dates">
+        <div class="date"><div class="lbl">Apply by (${esc(s.plan)})</div><div class="v">${esc(s.deadline)}</div>${s.deadlineDate?`<div class="mono">${countdown(s.deadlineDate)}</div>`:""}</div>
+        <div class="date decision"><div class="lbl">Decision released</div><div class="v">${esc(s.decision)}</div>${s.decisionDate?`<div class="mono">${countdown(s.decisionDate)}</div>`:""}</div>
+      </div>
+      ${s.planNote?`<p class="pnote">${esc(s.planNote)}</p>`:""}
+      <label class="field"><span>My notes</span><textarea id="notes-${s.id}" data-k="notes" placeholder="Supplement prompts, portal login reminder, interview date…">${esc(s.notes)}</textarea></label>
+      <div class="sfoot">
+        ${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">Admissions site ↗</a>`:"<span></span>"}
+        <span class="pos">${i+1} / ${n}</span>
+        <button class="btn small" data-edit="${s.id}">Edit details</button>
+      </div>
+    </div>
+  </article>`;
+}
+function renderSlides(){
+  const S = state.schools;
+  $("#track").innerHTML = S.map(slideHTML).join("") || `<div class="slide"><div class="sbody"><p class="empty">No colleges yet.</p></div></div>`;
+  $("#pchips").innerHTML = S.map((s,i)=>`<button class="pchip" data-idx="${i}" style="${vars(s)}"><i></i>${esc(s.short)}</button>`).join("");
+  state.idx = Math.min(state.idx, Math.max(0,S.length-1));
+  markCurrent(false);
+}
+function markCurrent(scrollChip){
+  document.querySelectorAll(".pchip").forEach((c,i)=>{ c.setAttribute("aria-current", String(i===state.idx)); if(i===state.idx && scrollChip) c.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"}); });
+  tintBar();
+}
+function tintBar(){
+  const s = state.schools[state.idx];
+  const bar = $("#appbar");
+  if(state.view==="schools" && s){ bar.style.setProperty("--tint", s.primary); bar.style.setProperty("--on-tint", onColor(s.primary)); }
+  else { bar.style.removeProperty("--tint"); bar.style.removeProperty("--on-tint"); }
+}
+function goTo(i, smooth=true){
+  const n = state.schools.length; if(!n) return;
+  state.idx = (i+n)%n; save();
+  const t = $("#track");
+  t.scrollTo({left: state.idx * (t.clientWidth + 16), behavior: smooth ? "smooth" : "auto"});
+  markCurrent(true);
+}
+let scrollT;
+$("#track").addEventListener("scroll", ()=>{
+  clearTimeout(scrollT);
+  scrollT = setTimeout(()=>{ const t=$("#track"); const i=Math.round(t.scrollLeft/(t.clientWidth+16)); if(i!==state.idx){ state.idx=i; save(); markCurrent(true); } }, 80);
+});
+$("#track").addEventListener("keydown", e=>{
+  if(e.target.matches("input,textarea,select")) return;
+  if(e.key==="ArrowRight"){ e.preventDefault(); goTo(state.idx+1); }
+  if(e.key==="ArrowLeft"){ e.preventDefault(); goTo(state.idx-1); }
+});
+$("#prevBtn").addEventListener("click", ()=>goTo(state.idx-1));
+$("#nextBtn").addEventListener("click", ()=>goTo(state.idx+1));
+$("#pchips").addEventListener("click", e=>{ const c=e.target.closest(".pchip"); if(c) goTo(+c.dataset.idx); });
+$("#track").addEventListener("input", e=>{
+  const el=e.target, k=el.dataset.k; if(!k) return;
+  const slide=el.closest(".slide"), s=find(slide.dataset.id); s[k]=el.value; save();
+  if(k==="status"){ const old=slide.querySelector(".hero .chip"); old.outerHTML=chip(s.status); }
+  renderList(); renderBoard();
+});
+$("#track").addEventListener("click", e=>{ const b=e.target.closest("[data-edit]"); if(b) openForm(find(b.dataset.edit)); });
+function openSchool(i){ state.idx=i; setView("schools"); requestAnimationFrame(()=>goTo(i,false)); }
+
+// ---------- Decisions board ----------
+function renderBoard(){
+  const S = state.schools;
+  const cnt = id => S.filter(s=>s.status===id).length;
+  $("#tiles").innerHTML = BOARD_ORDER.map(id=>`<button class="tile st-${id}" data-f="${id}" aria-pressed="${state.filter===id}"><span class="n num">${cnt(id)}</span><span class="t">${statusLabel(id)}</span></button>`).join("");
+  const groups = state.filter ? [state.filter] : BOARD_ORDER;
+  $("#groups").innerHTML = groups.map(id=>{
+    const rows = S.filter(s=>s.status===id).sort(byDecision);
+    return `<section class="group"><h3><span class="chip st-${id}" style="font-family:var(--sans)">${statusLabel(id)}</span><span class="cnt">${rows.length}</span></h3>
+      ${rows.length ? `<div class="tablewrap"><table><thead><tr><th>School</th><th>Plan</th><th>Decision date</th><th>Major</th><th>Status</th></tr></thead><tbody>
+      ${rows.map(s=>`<tr style="${vars(s)}"><td class="sch"><span><i></i>${esc(s.name)}</span></td><td><span class="plan">${esc(s.plan)}</span></td><td class="num">${esc(s.decision)}</td><td>${esc(s.major||"—")}</td>
+      <td><select id="bst-${s.id}" data-id="${s.id}" aria-label="Status for ${esc(s.name)}">${statusOptions(s.status)}</select></td></tr>`).join("")}
+      </tbody></table></div>` : `<p class="empty">None yet.</p>`}</section>`;
+  }).join("");
+}
+$("#tiles").addEventListener("click", e=>{ const t=e.target.closest(".tile"); if(!t) return; state.filter = state.filter===t.dataset.f ? null : t.dataset.f; save(); renderBoard(); });
+$("#groups").addEventListener("change", e=>{
+  const el=e.target; if(!el.dataset.id) return; const s=find(el.dataset.id); s.status=el.value; save();
+  toast(`${s.short} moved to ${statusLabel(s.status)}`); renderAll();
+});
+
+// ---------- Edit / add form ----------
+const overlay = $("#overlay"), modal = $("#modal");
+function closeModal(){ overlay.hidden = true; modal.innerHTML=""; }
+overlay.addEventListener("click", e=>{ if(e.target===overlay) closeModal(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && !overlay.hidden) closeModal(); });
+function f(id,label,val,type="text",ph=""){ return `<label class="field"><span>${label}</span><input id="f-${id}" name="${id}" type="${type}" value="${esc(val)}" placeholder="${esc(ph)}"></label>`; }
+function openForm(s){
+  const isNew = !s;
+  s = s || {name:"",short:"",nick:"",city:"",type:"Public",primary:"#2B3A67",secondary:"#C9A227",plan:"EA",deadline:"",deadlineDate:"",decision:"",decisionDate:"",planNote:"",undergrad:"",admit:"",you:"",youLabel:"Out-of-state",youNote:"",url:"",major:"",status:"notsubmitted",notes:""};
+  modal.innerHTML = `<h2>${isNew?"Add college":"Edit "+esc(s.short||s.name)}</h2>
+  <form id="sform" class="view" style="gap:12px">
+    <div class="frow">${f("name","School name",s.name,"text","e.g. Syracuse University")}${f("short","Short name (2–4 letters)",s.short,"text","SU")}</div>
+    <div class="frow">${f("city","City, state",s.city,"text","Syracuse, NY")}${f("nick","Mascot / nickname",s.nick,"text","Orange")}</div>
+    <div class="frow">
+      <label class="field"><span>Public or private</span><select id="f-type" name="type">${["Public","Private"].map(t=>`<option${t===s.type?" selected":""}>${t}</option>`).join("")}</select></label>
+      <label class="field"><span>How I'm applying</span><select id="f-plan" name="plan">${PLANS.map(p=>`<option${p===s.plan?" selected":""}>${p}</option>`).join("")}</select></label>
+    </div>
+    <div class="frow">
+      <label class="field"><span>Main color</span><span class="colorpair"><input type="color" id="f-primary" name="primary" value="${esc(s.primary)}"><input id="f-primaryTxt" value="${esc(s.primary)}" aria-label="Main color hex"></span></label>
+      <label class="field"><span>Second color</span><span class="colorpair"><input type="color" id="f-secondary" name="secondary" value="${esc(s.secondary)}"><input id="f-secondaryTxt" value="${esc(s.secondary)}" aria-label="Second color hex"></span></label>
+    </div>
+    <div class="frow">${f("deadline","Deadline (as shown)",s.deadline,"text","Nov 1, 2026")}${f("deadlineDate","Deadline date (for countdown)",s.deadlineDate,"date")}</div>
+    <div class="frow">${f("decision","Decision release (as shown)",s.decision,"text","Mid-Dec 2026")}${f("decisionDate","Decision date (for sorting)",s.decisionDate,"date")}</div>
+    <div class="frow">${f("undergrad","Undergrad population",s.undergrad,"text","~15,000")}${f("admit","Overall admit rate",s.admit,"text","~40%")}</div>
+    <div class="frow">${f("you","My admit rate",s.you,"text","~35%")}${f("youLabel","Which rate",s.youLabel,"text","Out-of-state / In-state (CT) / Private")}</div>
+    ${f("youNote","Rate note",s.youNote,"text","Where the number comes from")}
+    ${f("planNote","Plan details",s.planNote,"text","Anything special about this school's deadlines")}
+    ${f("url","Admissions website",s.url,"url","https://")}
+    <div class="actions">
+      <div class="grp">${isNew?"":`<button type="button" class="btn danger" id="delBtn">Delete</button>`}</div>
+      <div class="grp"><button type="button" class="btn" id="cancelBtn">Cancel</button><button type="submit" class="btn primary">${isNew?"Add college":"Save"}</button></div>
+    </div>
+  </form>`;
+  overlay.hidden = false;
+  modal.querySelector("#f-name").focus();
+  ["primary","secondary"].forEach(k=>{
+    const c=modal.querySelector("#f-"+k), t=modal.querySelector("#f-"+k+"Txt");
+    c.addEventListener("input",()=>t.value=c.value);
+    t.addEventListener("input",()=>{ if(/^#[0-9a-f]{6}$/i.test(t.value)) c.value=t.value; });
+  });
+  modal.querySelector("#cancelBtn").onclick = closeModal;
+  const del = modal.querySelector("#delBtn");
+  if(del) del.onclick = ()=>{
+    if(del.dataset.armed){ state.schools = state.schools.filter(x=>x.id!==s.id); save(); closeModal(); renderAll(); toast(`Removed ${s.name}`); return; }
+    del.dataset.armed="1"; del.textContent="Tap again to delete";
+  };
+  modal.querySelector("#sform").addEventListener("submit", e=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    if(!data.name.trim()){ modal.querySelector("#f-name").focus(); toast("Add a school name first"); return; }
+    if(!data.short.trim()) data.short = data.name.split(/\s+/).filter(w=>/^[A-Z]/.test(w)).map(w=>w[0]).join("").slice(0,4) || data.name.slice(0,3).toUpperCase();
+    if(isNew){ state.schools.push(Object.assign({id:uid(),major:"",status:"notsubmitted",notes:""}, data)); state.idx = state.schools.length-1; }
+    else Object.assign(s, data);
+    save(); closeModal(); renderAll(); toast(isNew ? `Added ${data.name}` : "Saved");
+    if(state.view==="schools") requestAnimationFrame(()=>goTo(state.idx,false));
+  });
+}
+$("#addBtn").addEventListener("click", ()=>openForm(null));
+
+// ---------- Backup ----------
+$("#backupBtn").addEventListener("click", ()=>{
+  const json = JSON.stringify({schools:state.schools});
+  modal.innerHTML = `<h2>Backup</h2>
+    <p class="help">Your list saves in this browser only. To move it to another phone or browser, copy the backup code here and paste it into Restore there.</p>
+    <label class="field"><span>Backup code</span><textarea id="bk-out" readonly>${esc(json)}</textarea></label>
+    <div class="actions"><span></span><button class="btn" id="bkCopy">Copy backup code</button></div>
+    <label class="field"><span>Restore from a backup code</span><textarea id="bk-in" placeholder="Paste a backup code here"></textarea></label>
+    <div class="actions"><button class="btn danger" id="bkReset">Reset to original 18</button><div class="grp"><button class="btn" id="bkClose">Close</button><button class="btn primary" id="bkRestore">Restore</button></div></div>`;
+  overlay.hidden = false;
+  modal.querySelector("#bkClose").onclick = closeModal;
+  modal.querySelector("#bkCopy").onclick = ()=>{
+    const ta = modal.querySelector("#bk-out");
+    navigator.clipboard.writeText(json).then(()=>toast("Copied"), ()=>{ ta.focus(); ta.select(); toast("Select all and copy"); });
+  };
+  modal.querySelector("#bkRestore").onclick = ()=>{
+    try{ const d = JSON.parse(modal.querySelector("#bk-in").value); if(!Array.isArray(d.schools)) throw 0; state.schools=d.schools; state.idx=0; save(); closeModal(); renderAll(); toast("Restored"); }
+    catch(e){ toast("That code isn't a valid backup"); }
+  };
+  const r = modal.querySelector("#bkReset");
+  r.onclick = ()=>{ if(r.dataset.armed){ state.schools=fresh(); state.idx=0; save(); closeModal(); renderAll(); toast("Reset"); return; } r.dataset.armed="1"; r.textContent="Tap again: erases your edits"; };
+});
+
+// ---------- views ----------
+function setView(v){
+  state.view = v; save();
+  ["list","schools","board"].forEach(k=>{ $("#view-"+k).hidden = k!==v; $("#tab-"+k).setAttribute("aria-selected", String(k===v)); });
+  tintBar();
+  if(v==="schools") requestAnimationFrame(()=>goTo(state.idx,false));
+  try{ history.replaceState(null,"","#"+v); }catch(e){}
+}
+document.querySelector(".tabs").addEventListener("click", e=>{ const t=e.target.closest(".tab"); if(t) setView(t.dataset.view); });
+function renderAll(){ renderList(); renderSlides(); renderBoard(); }
+
+renderAll();
+const h = (location.hash||"").slice(1);
+setView(["list","schools","board"].includes(h) ? h : (state.view||"list"));
+})();
+</script>
+</body>
+</html>
