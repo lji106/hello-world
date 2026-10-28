@@ -1,0 +1,22 @@
+# Copy to config.toml (git-ignored) and fill in.
+
+odds_api_key = ""                       # https://the-odds-api.com
+kalshi_key_id = ""                      # Kalshi > Account > API keys
+kalshi_private_key_path = "kalshi.pem"
+
+# Fair price = de-vigged line from the first of these that lists the game
+sharp_books = ["pinnacle", "circasports", "betonlineag"]
+devig_method = "power"
+# Books you can bet by hand (alerts only). theScore Bet is the former ESPN Bet.
+retail_books = ["thescorebet", "espnbet", "draftkings", "fanduel"]
+
+min_edge = 0.03
+min_fair_prob = 0.20
+max_fair_prob = 0.85
+min_minutes_to_start = 10
+max_minutes_to_start = 1440
+
+bankroll = 1000.0            # paper mode only; live mode reads your Kalshi balance
+kelly_multiplier = 0.25
+max_bet_fraction = 0.02
+max_open_exposure_fraction = 0.15
